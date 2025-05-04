@@ -1,3 +1,5 @@
+from cpu import CPU
+
 class Instruction:
     def execute(self, cpu):
         raise NotImplementedError()
@@ -18,4 +20,4 @@ class ITypeInstruction(Instruction):
         self.imm = int(imm, 0)  # auto-detect hex/dec
         self.rs1 = rs1
 
-        
+

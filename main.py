@@ -1,15 +1,14 @@
 from debugger_gui import DebuggerGUI
 from cpu import CPU
+from program_loader import ProgramLoader
 
 if __name__ == "__main__":
+    # Initialize the CPU and GUI
     cpu = CPU()
     gui = DebuggerGUI(cpu)
-
-    # Simulate execution
-    cpu.write_register("R1", 0x11111111)
     gui.update_and_wait()
-
-    cpu.write_register("R2", 0x22222222)
-    gui.update_and_wait()
-
-    # Add more steps as needed
+    # Load the program into memory
+    program_loader = ProgramLoader(cpu, gui)
+    program_loader.load_program("instructions.txt")
+    
+   
