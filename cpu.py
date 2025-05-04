@@ -1,7 +1,7 @@
 import random
 
 class CPU:
-    def __init__(self, number_of_registers:int=32, memory_size:int=4096):
+    def __init__(self, number_of_registers:int=32, memory_size_bytes:int=1024):
         #TODO : Initialize memory with values from laboratory file
         """
         Initialize the CPU with a given number of registers and memory size.
@@ -18,7 +18,7 @@ class CPU:
                 self.registers[name] = 0  # Always 0
             else:
                 self.registers[name] = random.getrandbits(32)
-        self.memory = bytearray(memory_size)  # Initialize memory with the given size
+        self.memory = bytearray(memory_size_bytes)  # Initialize memory with the given size
         self.IP = 0 # Instruction Pointer
 
 
@@ -79,12 +79,11 @@ class CPU:
             line = " ".join(f"0x{self.read_dword(j):08X}" for j in range(i, min(i + 32, len(self.memory)), 4))
             print(line)
 
-    def print_registers(self) -> None:
+    def registers_to_string(self) -> str:
         """
         Print the current state of the registers as hex values.
         """
-        for name, value in self.registers.items():
-            print(f"{name}: 0x{value:08X}")
+        return "\n".join(f"{name}: 0x{value:08X}" for name, value in self.registers.items())
     
     def set_IP(self, value:int) -> None:
         """
