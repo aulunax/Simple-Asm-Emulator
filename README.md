@@ -8,3 +8,14 @@
 4. Call the factory, or get rid of factory pattern and just run execute
 
 - [ ] Change structure of all instruction R3 is the destination register not r1
+
+- [ ] Parser should ignore empty lines in the file, and treat them as nop
+
+-[ ] Error handling should be improved
+
+- [ ] Validation should run before the execution and it should:
+  1. Check if the label is in instruction and replace it with addr
+  2. If addr is passed check if it's in code
+  3. Check if the registers used are available
+  4. Check if division is not by 0
+  5. Check if instructions have proper number of arguments
