@@ -11,7 +11,7 @@
 
 - [ ] Parser should ignore empty lines in the file, and treat them as nop
 
--[ ] Error handling should be improved
+- [ ] Error handling should be improved
 
 - [ ] Validation should run before the execution and it should:
   1. Check if the label is in instruction and replace it with addr
