@@ -44,7 +44,7 @@ class ProgramLoader:
 
 
         if opcode not in INSTRUCTION_SET:
-            raise ValueError(f"Unknown instruction: {opcode}")
+            raise ValueError(f"Unknown instruction: {opcode} (line: {line})")
         
         instruction_class = INSTRUCTION_SET[opcode]
 
