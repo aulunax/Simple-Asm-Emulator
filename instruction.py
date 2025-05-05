@@ -3,8 +3,6 @@ import re
 
 class Instruction:
 
-    _instruction_syntax = None
-
     def execute(self, cpu):
         raise NotImplementedError()
 
@@ -33,7 +31,7 @@ class RTypeInstruction(Instruction):
         return match.groups()
 
 class ITypeInstruction(Instruction):
-    def __init__(self, rd:int, r1:int, immediate:int):
+    def __init__(self, rd:int, immediate:int,  r1:int ):
         pass
     
     @classmethod
@@ -46,4 +44,13 @@ class ITypeInstruction(Instruction):
         return match.groups()
     
 
+class MemoryInstructions(ITypeInstruction):
+    @classmethod
+    def parse(cls, string:str) -> tuple:
+        # Expected format: R1, immediate (in format 0xFFFFFFFF), R2 (no extra spaces, strict commas)
+        pattern = r'^\s*(R[0-9]+)\s*,\s*(0x[0-9A-Fa-f]{8})\((R[0-9]+)\)\s*$'
+        match = re.match(pattern, string)
+        if not match:
+            raise ValueError(f"Invalid Memory instruction syntax: '{string}' (expected 'R1, imm(R2)' imm in format 0xFFFFFFFF)")
+        return match.groups()
 

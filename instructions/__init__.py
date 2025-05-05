@@ -13,5 +13,7 @@ from .SUBI import SUBI
 from .DIVI import DIVI
 from .MULI import MULI
 from .XORI import XORI
+from .LDW import LDW
+from .STW import STW
 
-__all__ = ["ADD", "NOP", "SUB", "MUL", "DIV", "AND", "OR", "XOR", "ADDI", "ANDI", "ORI", "SUBI", "DIVI", "MULI", "XORI"]
+__all__ = ["ADD", "NOP", "SUB", "MUL", "DIV", "AND", "OR", "XOR", "ADDI", "ANDI", "ORI", "SUBI", "DIVI", "MULI", "XORI", "LDW", "STW"]

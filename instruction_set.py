@@ -1,4 +1,4 @@
-from instructions import ADD, NOP, SUB, MUL, DIV, AND, OR, XOR, ADDI, ANDI, ORI, SUBI, DIVI, MULI, XORI
+from instructions import ADD, NOP, SUB, MUL, DIV, AND, OR, XOR, ADDI, ANDI, ORI, SUBI, DIVI, MULI, XORI, LDW, STW
 
 INSTRUCTION_SET: dict[str, type] = {
     "ADD": ADD,
@@ -15,7 +15,9 @@ INSTRUCTION_SET: dict[str, type] = {
     "SUBI": SUBI,
     "DIVI": DIVI,
     "MULI": MULI,
-    "XORI": XORI
+    "XORI": XORI,
+    "LDW": LDW,
+    "STW": STW,
 
     # Add other instructions here
 }
