@@ -1,4 +1,4 @@
-from instruction import RTypeInstruction
+from instruction import Instruction, RTypeInstruction
 
 class ADD(RTypeInstruction):
     def execute(self, cpu):
@@ -16,4 +16,6 @@ class ADD(RTypeInstruction):
         for reg in (rd, rs1, rs2):
             if reg not in valid_registers:
                 raise ValueError(f"Register {reg} does not exist.")
+            
+    
 

@@ -10,5 +10,6 @@ if __name__ == "__main__":
     # Load the program into memory
     program_loader = ProgramLoader(cpu, gui)
     program_loader.load_program("instructions.txt")
+    program_loader.print_state()
     
    
