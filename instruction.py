@@ -35,8 +35,15 @@ class RTypeInstruction(Instruction):
 class ITypeInstruction(Instruction):
     def __init__(self, rd:int, r1:int, immediate:int):
         pass
-    def parse(self, string:str)-> tuple:
-        pass
+    
+    @classmethod
+    def parse(cls, string:str) -> tuple:
+        # Expected format: R1, R2, immediate (no extra spaces, strict commas)
+        pattern = r'^\s*(R[0-9]+)\s*,\s*(0x[0-9A-Fa-f]{8})\s*,\s*(R[0-9]+)\s*$'
+        match = re.match(pattern, string)
+        if not match:
+            raise ValueError(f"Invalid I-type syntax: '{string}' (expected 'R1, immediate (in format 0xFFFFFFFF), R2')")
+        return match.groups()
     
 
 
