@@ -1,6 +1,10 @@
 from instruction import Instruction, RTypeInstruction
 
 class ADD(RTypeInstruction):
+    """
+    ADD instruction. Adds the values of two registers and stores the result in a third register.
+    The instruction format is: ADD rd, rs1, rs2
+    """
     def execute(self, cpu):
         cpu.write_register(self.rd, cpu.read_register(self.rs1) + cpu.read_register(self.rs2))
 

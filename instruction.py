@@ -1,4 +1,5 @@
 from cpu import CPU
+import re
 
 class Instruction:
 
@@ -24,14 +25,12 @@ class RTypeInstruction(Instruction):
 
     @classmethod
     def parse(cls, string:str) -> tuple:
-        string = string.strip()
-        string = string.replace(",", "")
-        components = string.split()
-        
-        if len(components) != 3:
-            raise ValueError(f"Invalid instruction format: {string}")
-        
-        return tuple(components)
+        # Expected format: R1, R2, R3 (no extra spaces, strict commas)
+        pattern = r'^\s*(R[0-9]+),\s*(R[0-9]+),\s*(R[0-9]+)\s*$'
+        match = re.match(pattern, string)
+        if not match:
+            raise ValueError(f"Invalid R-type syntax: '{string}' (expected 'R1, R2, R3')")
+        return match.groups()
 
 class ITypeInstruction(Instruction):
     def __init__(self, rd:int, r1:int, immediate:int):
