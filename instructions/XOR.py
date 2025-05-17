@@ -1,4 +1,4 @@
-from instruction import  RTypeInstruction
+from instruction_interfaces import  RTypeInstruction
 
 
 class XOR(RTypeInstruction):

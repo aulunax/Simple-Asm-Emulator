@@ -1,4 +1,4 @@
-from instruction import RTypeInstruction
+from instruction_interfaces import RTypeInstruction
 
 class ADD(RTypeInstruction):
     """
@@ -13,7 +13,7 @@ class ADD(RTypeInstruction):
         if len(args) != 3:
             raise ValueError("ADD instruction requires exactly 3 arguments: rd, rs1, rs2.")
 
-        rd, rs1, rs2 = args
+        rs1, rs2, rd = args
 
         if rd == 'R0':
             raise ValueError("Cannot write to R0, it is always 0.")

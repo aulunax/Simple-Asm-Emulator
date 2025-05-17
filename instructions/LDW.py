@@ -1,4 +1,4 @@
-from instruction import MemoryInstructions
+from instruction_interfaces import MemoryInstructions
 
 
 class LDW(MemoryInstructions):

@@ -1,4 +1,4 @@
-from instruction import BranchInstructions
+from instruction_interfaces import BranchInstructions
 
 class BRNZ(BranchInstructions):
     """

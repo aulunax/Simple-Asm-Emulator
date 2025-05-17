@@ -1,5 +1,5 @@
 from cpu import CPU
-from instruction import Instruction
+from instruction_interfaces import Instruction
 from debugger_gui import DebuggerGUI
 from instruction_set import INSTRUCTION_SET
 

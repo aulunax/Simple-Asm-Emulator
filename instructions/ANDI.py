@@ -1,4 +1,4 @@
-from instruction import ITypeInstruction
+from instruction_interfaces import ITypeInstruction
 
 
 class ANDI(ITypeInstruction):
