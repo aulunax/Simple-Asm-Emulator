@@ -175,11 +175,43 @@ class MemoryInstructions(Instruction):
         return match.groups()
     
 
+# ------------------------- Branch Instructions ------------------------- #
 
-class BranchInstructions(ITypeInstruction):
+class BranchInstructions(Instruction):
+
+    def __init__(self, r1:str, immediate:str):
+        """
+        Initialize the Branch instruction with the given registers and immediate value.
+        The register are strings, the exact value of register is not fetched yet, 
+        see the id method in instruction class.
+        Args:
+            r1 (str): First register.
+            immediate (int): Immediate value.
+        """
+        self.r1:str = r1
+        self.immediate: int = int(immediate) & 0xFFFFFFFF
+        self.r1_val: int | None = None
+
+    def id(self, cpu: CPU):
+        """
+        Fetch the value of the first register from the CPU.
+        """
+        self.r1_val = cpu.read_register(self.r1)
+        # The immediate value is already set in the constructor
+
+    def mem(self, cpu: CPU):
+        pass
+
+    def wb(self, cpu: CPU):
+        """
+        Write the result back to the destination register in the CPU.
+        """
+        # No write-back needed for branch instructions
+        pass
+
     @classmethod
     def parse(cls, string:str) -> tuple:
-        # Expected format: R1, immediate (in format 0xFFFFFFFF), R2 (no extra spaces, strict commas)
+        # Expected format: R1, immediate (in format 0xFFFFFFFF) or label (no extra spaces, strict commas)
         pattern = r'^\s*(R[0-9]+)\s*,\s*(0x[0-9A-Fa-f]{8}|[a-zA-Z0-9]+)\s*$'
         match = re.match(pattern, string)
         if not match:

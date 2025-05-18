@@ -12,12 +12,15 @@ class CPU:
         """
 
         self._registers = {}
+        self._register_status: dict[str] = {}
         for i in range(number_of_registers):  # R0 to R7
             name = f'R{i}'
             if name == 'R0':
                 self._registers[name] = 0  # Always 0
+                self._register_status[name] = "always 0"  # Register status for R0
             else:
                 self._registers[name] = random.getrandbits(32)
+                self._register_status[name] = None # Initialize register status to None
         self._memory = bytearray(memory_size_bytes)  # Initialize memory with the given size
         self._PC = 0 # Instruction Pointer
 
