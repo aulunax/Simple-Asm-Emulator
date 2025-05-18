@@ -18,4 +18,4 @@ class BRGT(BranchInstructions):
         """
         String representation of the BRGT instruction.
         """
-        return f"BRGT {self.r1}, {self.address} "
+        return f"BRGT {self.r1}, {self.address}"

@@ -11,13 +11,19 @@
 
 - [ ] Parser should ignore empty lines in the file, and treat them as nop
 
-- [ ] Error handling should be improved
+- [x] Error handling should be improved
 
-- [ ] Validation should run before the execution and it should:
+- [x] Validation should run before the execution and it should:
 
   1. Check if the label is in instruction and replace it with addr
   2. If addr is passed check if it's in code
   3. Check if the registers used are available
   4. Check if instructions have proper number of arguments
 
-- [ ] Validation of the memory and branch classes
+- [x] Validation of the memory and branch classes
+
+- [ ] Change ID phase to change registers to pending, and return stall flag = True if ID tries to fetch register that is already in use
+
+- [ ] Pipeline architecture execution of the code, Wb -> IF
+
+- [ ] Simple stalling, no forwarding
