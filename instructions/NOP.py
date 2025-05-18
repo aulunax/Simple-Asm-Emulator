@@ -5,9 +5,36 @@ class NOP(RTypeInstruction):
     """
     No Operation (NOP) instruction. It does nothing and is used for timing or alignment purposes.
     """
-    def execute(self, cpu):
-        # NOP does nothing
+
+    def id(self, cpu):
+        """
+        ID stage for NOP instruction. It does nothing.
+        """
+        # NOP does not require any register values
         pass
+
+    def ex(self, cpu):
+        """
+        Execute the NOP instruction. It does nothing.
+        """
+        # NOP does not change any state or registers
+        pass
+
+    def mem(self, cpu):
+        """
+        Memory stage for NOP instruction. It does nothing.
+        """
+        # NOP does not require any memory access
+        pass
+
+    def wb(self, cpu):
+        """
+        Write-back stage for NOP instruction. It does nothing.
+        """
+        # NOP does not write back any result
+        pass
+    
+
 
     @classmethod
     def validate(cls, args: list[str], valid_registers: set[str]):

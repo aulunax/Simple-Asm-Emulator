@@ -75,13 +75,6 @@ class RTypeInstruction(Instruction):
     def mem(self, cpu: CPU):
         pass
     
-    def wb(self, cpu: CPU):
-        """
-        Write the result back to the destination register in the CPU.
-        """
-        if self.rd != 'R0':
-            cpu.write_register(self.rd, self.result)
-        # R0 is always 0, so we don't write to it 
     
     @classmethod
     def parse(cls, string:str) -> tuple:
@@ -91,6 +84,20 @@ class RTypeInstruction(Instruction):
         if not match:
             raise ValueError(f"Invalid R-type syntax: '{string}' (expected 'R1, R2, R3')")
         return match.groups()
+    
+    
+    @classmethod
+    def validate(cls, args: list[str], valid_registers: set[str]):
+        if len(args) != 3:
+            raise ValueError(str(cls)+"instruction requires exactly 3 arguments: r1, r2, rd.")
+
+        r1, r2, rd = args
+
+        if rd == 'R0':
+            raise ValueError("Cannot write to R0, it is always 0.")
+        for reg in (r1, r2, rd):
+            if reg not in valid_registers:
+                raise ValueError(f"Register {reg} does not exist.")
     
 
 # ------------------------- I-Type Instructions ------------------------- #
@@ -115,7 +122,7 @@ class ITypeInstruction(Instruction):
     
     @classmethod
     def parse(cls, string:str) -> tuple:
-        # Expected format: R1, R2, immediate (no extra spaces, strict commas)
+        # Expected format: R1, immediate (in format 0xFFFFFFFF), R2 (no extra spaces, strict commas)
         pattern = r'^\s*(R[0-9]+)\s*,\s*(0x[0-9A-Fa-f]{8})\s*,\s*(R[0-9]+)\s*$'
         match = re.match(pattern, string)
         if not match:
@@ -128,13 +135,34 @@ class ITypeInstruction(Instruction):
         """
         self.r1_val = cpu.read_register(self.r1)
         # The immediate value is already set in the constructor
+
+    def mem(self, cpu: CPU):
+        pass
     
 
 
 
 # ------------------------- Memory Instructions ------------------------- #
 
-class MemoryInstructions(ITypeInstruction):
+class MemoryInstructions(Instruction):
+
+    def __init__(self, r1:str, immediate:str, r2:str):
+        """
+        Initialize the Memory instruction with the given registers and immediate value.
+        The register are strings, the exact value of register is not fetched yet, 
+        see the id method in instruction class.
+        Args:
+            r1 (str): First register.
+            immediate (int): Immediate value.
+            r2 (str): Second register.
+        """
+        self.r1:str = r1
+        self.immediate: int = int(immediate) & 0xFFFFFFFF
+        self.r2:str = r2
+
+        self.effective_address: int | None = None
+        self.r1_val: int | None = None
+        self.r2_val: int | None = None
 
    
     @classmethod

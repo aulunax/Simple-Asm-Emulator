@@ -4,9 +4,15 @@ from cpu import CPU
 class SUB(RTypeInstruction):
     """
     SUB instruction. Performs operation r1 - r2 and stores it's outcome in rd.
-    The instruction format is: SUB rd, rs1, rs2
+    The instruction format is: SUB r1, r2, rd
     """
-    def execute(self, cpu: CPU):
-        cpu.write_register(self.rd, cpu.read_register(self.rs1) - cpu.read_register(self.rs2))
+
+    def ex(self, cpu: CPU) -> None:
+        """
+        Execute the SUB instruction.
+        """
+        # Perform the subtraction
+        self.result = self.r1_val - self.r2_val
+        
 
 

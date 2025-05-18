@@ -118,3 +118,13 @@ class CPU:
             int: The current value of the IP.
         """
         return self._PC & 0xFFFFFFFF
+    
+    def is_valid_mem_addr(self, addr:int) -> bool:
+        """
+        Check if a given address is valid.
+        Args:
+            addr (int): Address to check.
+        Returns:
+            bool: True if the address is valid, False otherwise.
+        """
+        return 0 <= addr < len(self._memory)

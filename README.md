@@ -14,8 +14,10 @@
 - [ ] Error handling should be improved
 
 - [ ] Validation should run before the execution and it should:
+
   1. Check if the label is in instruction and replace it with addr
   2. If addr is passed check if it's in code
   3. Check if the registers used are available
-  4. Check if division is not by 0
-  5. Check if instructions have proper number of arguments
+  4. Check if instructions have proper number of arguments
+
+- [ ] Validation of the memory and branch classes

@@ -4,12 +4,19 @@ from instruction_interfaces import ITypeInstruction
 class DIVI(ITypeInstruction):
     """
     DIVI instruction. Divides a register value by an immediate value and stores the result in a destination register.
-    The instruction format is: DIVI rd, rs1, immediate
+    The instruction format is: DIVI r1, immediate, rd
     """
-    def execute(self, cpu):
-        cpu.write_register(self.rd, cpu.read_register(self.rs1) // self.immediate)  # Integer division
+    def ex(self, cpu):
+        """
+        Execute the DIVI instruction.
+        """
+        if self.r1_val is None:
+            raise ValueError("Register value not set. Ensure ID stage is called before EX stage.")
+        
+        if self.immediate == 0:
+            raise ZeroDivisionError("Division by zero is not allowed.")
+        
+        self.result = self.r1_val // self.immediate
+        # Handle remainder if necessary (depends on architecture)
 
-    @classmethod
-    # TODO: Check if not division by zero
-    def validate(cls, args: list[str], valid_registers: set[str]):
-        pass
+   

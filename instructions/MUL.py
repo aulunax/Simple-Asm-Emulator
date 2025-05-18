@@ -4,9 +4,17 @@ from instruction_interfaces import RTypeInstruction
 class MUL(RTypeInstruction):
     """
     MUL instruction. Multiplies the values of r1 and r2 and stores the result in rd.
-    The instruction format is: MUL rd, rs1, rs2
+    The instruction format is: MUL r1, r2, rd
     """
-    def execute(self, cpu):
-        cpu.write_register(self.rd, cpu.read_register(self.rs1) * cpu.read_register(self.rs2))
+    def ex(self, cpu):
+        """
+        Execute the instruction using the CPU.
+        """
+        # Perform the multiplication
+        self.result = self.r1_val * self.r2_val
+
+    
+
+    
 
     

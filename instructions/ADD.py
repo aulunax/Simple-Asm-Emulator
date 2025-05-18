@@ -3,23 +3,20 @@ from instruction_interfaces import RTypeInstruction
 class ADD(RTypeInstruction):
     """
     ADD instruction. Adds the values of two registers and stores the result in a third register.
-    The instruction format is: ADD rd, rs1, rs2
+    The instruction format is: ADD r1, r2, rd
     """
-    def execute(self, cpu):
-        cpu.write_register(self.rd, cpu.read_register(self.rs1) + cpu.read_register(self.rs2))
+    
+    def ex(self, cpu):
+        """
+        Execute the ADD instruction.
+        """
+        if self.r1_val is None or self.r2_val is None:
+            raise ValueError("Register values not set. Ensure ID stage is called before EX stage.")
+        
+        self.result = self.r1_val + self.r2_val
+        # Handle overflow if necessary (depends on architecture)
 
-    @classmethod
-    def validate(cls, args: list[str], valid_registers: set[str]):
-        if len(args) != 3:
-            raise ValueError("ADD instruction requires exactly 3 arguments: rd, rs1, rs2.")
 
-        rs1, rs2, rd = args
-
-        if rd == 'R0':
-            raise ValueError("Cannot write to R0, it is always 0.")
-        for reg in (rd, rs1, rs2):
-            if reg not in valid_registers:
-                raise ValueError(f"Register {reg} does not exist.")
             
     
 

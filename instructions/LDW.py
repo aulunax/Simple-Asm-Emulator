@@ -4,13 +4,37 @@ from instruction_interfaces import MemoryInstructions
 class LDW(MemoryInstructions):
     """
     LDW instruction. Loads a word from memory into a register.
-    The instruction format is: LDW rd, offset(rs1)
+    The instruction format is: LDW r1, offset(r2)
     """
-    def execute(self, cpu):
-        # TODO : Check if the address is valid, maby do it in cpu 
+
+    def id(self, cpu):
+        """
+        Fetch the value of the first register from the CPU.
+        """
+        self.r2_val = cpu.read_register(self.r1)
+      
+    def ex(self, cpu):
+        """
+        Execute the instruction using the CPU.
+        """
         # Calculate the effective address
-        effective_address = cpu.read_register(self.rs1) + self.offset
-        # Load the word from memory into the destination register
-        cpu.write_register(self.rd, cpu.memory.load_word(effective_address))
+        self.effective_address = self.r2_val + self.offset
+
+    def mem(self, cpu):
+        """
+        Memory stage for LDW instruction.
+        Load the word from memory into the destination register.
+        """
+        self.result = cpu.read_memory(self.effective_address)
+
+    def wb(self, cpu):
+        """
+        Write the result back to the destination register in the CPU.
+        """
+        if self.r1 != 'R0':
+            cpu.write_register(self.r1, self.result)
+        # R0 is always 0, so we don't write to it
+
+
 
     
