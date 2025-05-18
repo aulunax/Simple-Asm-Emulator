@@ -19,4 +19,9 @@ class DIV(RTypeInstruction):
         self.result = self.r1_val // self.r2_val
         # Handle remainder if necessary (depends on architecture)
 
+    def __str__(self):
+        """
+        String representation of the DIV instruction.
+        """
+        return f"DIV {self.r1}, {self.r2}, {self.rd} "
   

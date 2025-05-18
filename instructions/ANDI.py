@@ -17,5 +17,9 @@ class ANDI(ITypeInstruction):
         self.result = self.r1_val & self.immediate
 
    
-
+    def __str__(self):
+        """
+        String representation of the ANDI instruction.
+        """
+        return f"ANDI {self.r1}, {self.immediate}, {self.rd} "
         

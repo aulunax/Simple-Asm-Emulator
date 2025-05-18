@@ -4,7 +4,7 @@ import re
 class Instruction:
 
     @classmethod
-    def validate(cls, args: list[str]):
+    def validate(cls, args: list[str], valid_registers: set[str], label_dict: dict[str, int] | None = None, line_number: int | None = None):
         raise NotImplementedError()
     
     @classmethod 
@@ -46,7 +46,7 @@ class Instruction:
 # ------------------------- R-Type Instructions ------------------------- #
 
 class RTypeInstruction(Instruction):
-    def __init__(self, r1:str, r2:str, rd:str):
+    def __init__(self, r1:str, r2:str, rd:str, label_dict: dict[str, int] | None = None):
         """
         Initialize the R-type instruction with the given registers.
         The register are strings, the exact value of register is not fetched yet, 
@@ -87,7 +87,7 @@ class RTypeInstruction(Instruction):
     
     
     @classmethod
-    def validate(cls, args: list[str], valid_registers: set[str]):
+    def validate(cls, args: list[str], valid_registers: set[str], label_dict: dict[str, int] | None = None, line_number: int | None = None):
         if len(args) != 3:
             raise ValueError(str(cls)+"instruction requires exactly 3 arguments: r1, r2, rd.")
 
@@ -103,7 +103,7 @@ class RTypeInstruction(Instruction):
 # ------------------------- I-Type Instructions ------------------------- #
 
 class ITypeInstruction(Instruction):
-    def __init__(self, r1:str, immediate:str,  rd:str):
+    def __init__(self, r1:str, immediate:str,  rd:str, label_dict: dict[str, int] | None = None):
         """
         Initialize the I-type instruction with the given registers and immediate value.
         The register are strings, the exact value of register is not fetched yet, 
@@ -114,7 +114,7 @@ class ITypeInstruction(Instruction):
             rd (str): Destination register.
         """
         self.r1:str = r1
-        self.immediate: int = int(immediate) & 0xFFFFFFFF  # Ensure it's a 32-bit value
+        self.immediate: int = int(immediate, 16) & 0xFFFFFFFF  # Ensure it's a 32-bit value
         self.rd:str = rd
 
         self.r1_val: int | None = None
@@ -138,26 +138,37 @@ class ITypeInstruction(Instruction):
 
     def mem(self, cpu: CPU):
         pass
+
+    @classmethod
+    def validate(cls, args: list[str], valid_registers: set[str], label_dict: dict[str, int] | None = None, line_number: int | None = None):
+        if len(args) != 3:
+            raise ValueError(str(cls)+"instruction requires exactly 3 arguments: r1, immediate, rd.")
+
+        r1, immediate, rd = args
+
+        if rd == 'R0':
+            raise ValueError("Cannot write to R0, it is always 0.")
+        for reg in (r1, rd):
+            if reg not in valid_registers:
+                raise ValueError(f"Register {reg} does not exist.")
     
-
-
 
 # ------------------------- Memory Instructions ------------------------- #
 
 class MemoryInstructions(Instruction):
 
-    def __init__(self, r1:str, immediate:str, r2:str):
+    def __init__(self, r1:str, offset:str, r2:str, label_dict: dict[str, int] | None = None):
         """
         Initialize the Memory instruction with the given registers and immediate value.
         The register are strings, the exact value of register is not fetched yet, 
         see the id method in instruction class.
         Args:
             r1 (str): First register.
-            immediate (int): Immediate value.
+            offset (int): Offset value.
             r2 (str): Second register.
         """
         self.r1:str = r1
-        self.immediate: int = int(immediate) & 0xFFFFFFFF
+        self.offset: int = int(offset, 16) & 0xFFFFFFFF
         self.r2:str = r2
 
         self.effective_address: int | None = None
@@ -174,12 +185,25 @@ class MemoryInstructions(Instruction):
             raise ValueError(f"Invalid Memory instruction syntax: '{string}' (expected 'R1, imm(R2)' imm in format 0xFFFFFFFF)")
         return match.groups()
     
+    @classmethod
+    def validate(cls, args: list[str], valid_registers: set[str], label_dict: dict[str, int] | None = None, line_number: int | None = None):
+        if len(args) != 3:
+            raise ValueError(str(cls)+"instruction requires exactly 3 arguments: r1, immediate, r2.")
+
+        r1, immediate, r2 = args
+
+        if r1 == 'R0':
+            raise ValueError("Cannot write to R0, it is always 0.")
+        for reg in (r1, r2):
+            if reg not in valid_registers:
+                raise ValueError(f"Register {reg} does not exist.")
+    
 
 # ------------------------- Branch Instructions ------------------------- #
 
 class BranchInstructions(Instruction):
 
-    def __init__(self, r1:str, immediate:str):
+    def __init__(self, r1:str, immediate:str, label_dict: dict[str, int]):
         """
         Initialize the Branch instruction with the given registers and immediate value.
         The register are strings, the exact value of register is not fetched yet, 
@@ -189,7 +213,13 @@ class BranchInstructions(Instruction):
             immediate (int): Immediate value.
         """
         self.r1:str = r1
-        self.immediate: int = int(immediate) & 0xFFFFFFFF
+        self.immediate: str = immediate
+
+        if immediate in label_dict.keys():
+            self.address = label_dict[immediate]
+        else:
+            self.address = int(immediate, 16) & 0xFFFFFFFF
+
         self.r1_val: int | None = None
 
     def id(self, cpu: CPU):
@@ -217,4 +247,33 @@ class BranchInstructions(Instruction):
         if not match:
             raise ValueError(f"Invalid Branch instruction syntax: '{string}' (expected 'R1, j' j could be a label or immediate in format 0xFFFFFFFF)")
         return match.groups()
+    
+    @classmethod
+    def validate(cls, args: list[str], valid_registers: set[str], label_dict: dict[str, int] | None = None, line_number: int | None = None):
+
+        if label_dict is None:
+            raise ValueError("Label dictionary is required for branch instruction validation.")
+        
+        if line_number is None:
+            raise ValueError("Line number is required for branch instruction validation.")
+        
+        r1, address = args
+        
+
+        if address is None:
+            raise ValueError(f"Label '{args[1]}' not found in line {line_number}.")
+        
+        if address not in label_dict.keys():
+            pattern = r'0x[0-9A-Fa-f]{8}'
+            match = re.match(pattern, address)
+            if not match:
+                raise ValueError(f"Invalid immediate value: '{address}' (expected '0xFFFFFFFF')")
+            if int(address, 16) < 0 or int(address, 16) > line_number * 4:
+                raise ValueError(f"Immediate value '{address}' out of range.")
+            
+        
+
+        if r1 not in valid_registers:
+            raise ValueError(f"Register {r1} does not exist.")
+        
 

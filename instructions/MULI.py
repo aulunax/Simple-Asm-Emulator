@@ -12,3 +12,9 @@ class MULI(ITypeInstruction):
         """
         # Perform the multiplication
         self.result = self.r1_val * self.immediate
+
+    def __str__(self):
+        """
+        String representation of the MULI instruction.
+        """
+        return f"MULI {self.r1}, {self.immediate}, {self.rd} "

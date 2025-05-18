@@ -15,3 +15,9 @@ class XORI(ITypeInstruction):
         
         # Perform the bitwise XOR operation
         self.result = self.r1_val ^ self.immediate
+
+    def __str__(self):
+        """
+        String representation of the XORI instruction.
+        """
+        return f"XORI {self.r1}, {self.immediate}, {self.rd} "

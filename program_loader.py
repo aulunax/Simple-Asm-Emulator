@@ -8,8 +8,8 @@ from instruction_set import INSTRUCTION_SET
 class ProgramLoader:
     def __init__(self, cpu: CPU, gui: DebuggerGUI):
         self.cpu = cpu
-        self._labels = {}
-        self._parsed_input = [str, tuple] # Stores opcode and tuple of components for future validation
+        self._labels: list[str, int] = {}
+        self._parsed_input: list[str, tuple] = [] # Stores opcode and tuple of components for future validation
         self._program: list[Instruction] = []
         self.gui = gui
         self._line_number = 0
@@ -25,9 +25,9 @@ class ProgramLoader:
             for line_content in file:
                 self.parse_lines(line_content.strip())
                 self._line_number += 1
-            
-        
-        
+        self.validate_and_save_program()
+
+   
     def parse_lines(self, line: str):
         """
         Load the next instruction into memory and execute it.
@@ -74,6 +74,26 @@ class ProgramLoader:
             return rest.lstrip()
         return line
 
+
+    def validate_and_save_program(self):
+        """
+        Load the program into memory.
+        """
+        valid_registers = self.cpu.get_valid_registers()
+
+        for opcode, components in self._parsed_input:
+            instruction_class = INSTRUCTION_SET[opcode]
+     
+            try:
+                # Validate the instruction components
+                instruction_class.validate(components, valid_registers, self._labels, self._line_number)
+            except Exception as e:
+                raise ValueError(f"Invalid instruction: {opcode} with components {components} (line: {self._line_number})") from e
+            instruction = instruction_class(*components, label_dict=self._labels)
+            self._program.append(instruction)
+
+        # Reset the line number for the next program load
+        self._line_number = 0
     def print_state(self):
         """
         Print the current state of the program loader.
@@ -81,5 +101,12 @@ class ProgramLoader:
         print(f"Current line number: {self._line_number}")
         print(f"Labels: {self._labels}")
         print(f"Parsed input: {self._parsed_input}")
-        print(f"Program: {self._program}")
+        self.print_program()
 
+
+    def print_program(self):
+        """
+        Print the current program.
+        """
+        for instruction in self._program:
+            print(instruction)

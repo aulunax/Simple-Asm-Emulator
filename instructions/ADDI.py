@@ -16,7 +16,11 @@ class ADDI(ITypeInstruction):
         self.result = self.r1_val + self.immediate
         # Handle overflow if necessary (depends on architecture)
 
-   
+    def __str__(self):
+        """
+        String representation of the ADDI instruction.
+        """
+        return f"ADDI {self.r1}, {self.immediate}, {self.rd} "
         
     
 

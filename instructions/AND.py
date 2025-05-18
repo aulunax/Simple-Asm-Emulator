@@ -15,3 +15,9 @@ class AND(RTypeInstruction):
         
         self.result = self.r1_val & self.r2_val
         
+
+    def __str__(self):
+        """
+        String representation of the AND instruction.
+        """
+        return f"AND {self.r1}, {self.r2}, {self.rd} "

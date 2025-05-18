@@ -25,7 +25,10 @@ class LDW(MemoryInstructions):
         Memory stage for LDW instruction.
         Load the word from memory into the destination register.
         """
-        self.result = cpu.read_memory(self.effective_address)
+        if cpu.is_valid_mem_addr(self.effective_address) == False:
+            raise Exception("Invalid memory address")
+        else:
+            self.result = cpu.read_memory(self.effective_address)
 
     def wb(self, cpu):
         """
@@ -35,6 +38,11 @@ class LDW(MemoryInstructions):
             cpu.write_register(self.r1, self.result)
         # R0 is always 0, so we don't write to it
 
+    def __str__(self):
+        """
+        String representation of the LDW instruction.
+        """
+        return f"LDW {self.r1}, {self.offset}({self.r2}) "
 
 
     

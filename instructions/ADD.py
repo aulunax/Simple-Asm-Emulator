@@ -17,6 +17,13 @@ class ADD(RTypeInstruction):
         # Handle overflow if necessary (depends on architecture)
 
 
+    def __str__(self):
+        """
+        String representation of the ADD instruction.
+        """
+        return f"ADD {self.r1}, {self.r2}, {self.rd} "
+
+
             
     
 

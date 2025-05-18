@@ -1,7 +1,10 @@
 from instruction_interfaces import RTypeInstruction
 
 
-class NOP(RTypeInstruction):
+class NOP():
+
+    def __init__(*args, **kwargs):
+        pass
     """
     No Operation (NOP) instruction. It does nothing and is used for timing or alignment purposes.
     """
@@ -37,7 +40,7 @@ class NOP(RTypeInstruction):
 
 
     @classmethod
-    def validate(cls, args: list[str], valid_registers: set[str]):
+    def validate(cls, args: list[str], valid_registers: set[str], label_dict: dict[str, int] | None = None, line_number: int | None = None):
         if len(args) != 0:
             raise ValueError("NOP instruction does not require any arguments.")
         
@@ -47,3 +50,9 @@ class NOP(RTypeInstruction):
         if string.strip():
             raise ValueError("NOP instruction does not take any arguments.")
         return ()
+    
+    def __str__(self):
+        """
+        String representation of the NOP instruction.
+        """
+        return "NOP"

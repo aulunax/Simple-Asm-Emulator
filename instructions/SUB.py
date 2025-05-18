@@ -13,6 +13,12 @@ class SUB(RTypeInstruction):
         """
         # Perform the subtraction
         self.result = self.r1_val - self.r2_val
+
+    def __str__(self) -> str:
+        """
+        String representation of the SUB instruction.
+        """
+        return f"SUB {self.r1}, {self.r2}, {self.rd} "
         
 
 

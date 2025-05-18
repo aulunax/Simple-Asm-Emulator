@@ -19,4 +19,8 @@ class DIVI(ITypeInstruction):
         self.result = self.r1_val // self.immediate
         # Handle remainder if necessary (depends on architecture)
 
-   
+    def __str__(self):
+        """
+        String representation of the DIVI instruction.
+        """
+        return f"DIVI {self.r1}, {self.immediate}, {self.rd} "

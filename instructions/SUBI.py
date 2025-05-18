@@ -15,3 +15,9 @@ class SUBI(ITypeInstruction):
             raise ValueError("Register value not set. Ensure ID stage is called before EX stage.")
         
         self.result = self.r1_val - self.immediate
+
+    def __str__(self):
+        """
+        String representation of the SUBI instruction.
+        """
+        return f"SUBI {self.r1}, {self.immediate}, {self.rd} "

@@ -26,7 +26,11 @@ class STW(MemoryInstructions):
         Memory stage for STW instruction.
         Store the word from the source register into memory.
         """
-        cpu.write_memory(self.effective_address, self.r1_val)
+
+        if(cpu.is_valid_mem_addr(self.effective_address) == False):
+            raise Exception("Invalid memory address")
+        else:
+            cpu.write_memory(self.effective_address, self.r1_val)
 
     def wb(self, cpu):
         """
@@ -34,4 +38,10 @@ class STW(MemoryInstructions):
         """
         # No write-back needed for STW, as it only writes to memory
         pass
+
+    def __str__(self):
+        """
+        String representation of the STW instruction.
+        """
+        return f"STW {self.r1}, {self.offset}({self.r2}) "
     

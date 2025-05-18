@@ -7,7 +7,7 @@
 3. Check if opcode exists, if yes then check the syntax of a given instruction
 4. Call the factory, or get rid of factory pattern and just run execute
 
-- [ ] Change structure of all instruction R3 is the destination register not r1
+- [x] Change structure of all instruction R3 is the destination register not r1
 
 - [ ] Parser should ignore empty lines in the file, and treat them as nop
 

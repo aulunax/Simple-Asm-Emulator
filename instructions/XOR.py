@@ -13,4 +13,10 @@ class XOR(RTypeInstruction):
         # Perform the bitwise XOR operation
         self.result = self.r1_val ^ self.r2_val
 
+    def __str__(self):
+        """
+        String representation of the XOR instruction.
+        """
+        return f"XOR {self.r1}, {self.r2}, {self.rd} "
+
   

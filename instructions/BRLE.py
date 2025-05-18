@@ -12,4 +12,10 @@ class BRLE(BranchInstructions):
         # Pc - 1 ???
         if self.r1_val <= 0:
             # Calculate the target address
-            cpu.set_PC(self.immediate)
+            cpu.set_PC(self.address)
+
+    def __str__(self):
+        """
+        String representation of the BRLE instruction.
+        """
+        return f"BRLE {self.r1}, {self.address} "
