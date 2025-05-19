@@ -9,12 +9,13 @@ class NOP():
     No Operation (NOP) instruction. It does nothing and is used for timing or alignment purposes.
     """
 
-    def id(self, cpu):
+    def id(self, cpu) -> bool:
         """
         ID stage for NOP instruction. It does nothing.
         """
         # NOP does not require any register values
-        pass
+        stall:bool = False
+        return stall
 
     def ex(self, cpu):
         """

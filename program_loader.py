@@ -52,8 +52,6 @@ class ProgramLoader:
 
         self._parsed_input.append((opcode,instruction_class.parse(line)))
 
-        
-        
 
     def strip_label(self, line:str) -> str:
         """
@@ -92,8 +90,61 @@ class ProgramLoader:
             instruction = instruction_class(*components, label_dict=self._labels)
             self._program.append(instruction)
 
-        # Reset the line number for the next program load
-        self._line_number = 0
+
+    def run_program(self):
+        pipeline: list[Instruction | None] = [None] * 5  # IF, ID, EX, MEM, WB
+        cycles = 0
+        stall:bool = False
+
+        while any(pipeline) or self.cpu.get_PC() < len(self._program)*4:
+            cycles += 1
+            
+            
+            # --- Write Back Stage ---
+            if pipeline[4]:
+                pipeline[4].wb(self.cpu)
+                stall = False  # Reset stall after WB
+
+            # --- Memory Stage ---
+            if pipeline[3]:
+                pipeline[3].mem(self.cpu)
+
+            # --- Execute Stage ---
+            if pipeline[2]:
+                pipeline[2].ex(self.cpu)
+
+            # --- Instruction Decode Stage ---
+            if pipeline[1]:
+                stall = pipeline[1].id(self.cpu)
+
+
+              # --- Shift Pipeline ---
+            if stall:
+                # Freeze IF and ID, let EX/MEM/WB shift
+                pipeline = [pipeline[0], pipeline[1]] + [None] + pipeline[2:4]
+            else:
+                # Normal shift
+                pipeline = [None] + pipeline[:4]
+
+
+             # --- Instruction Fetch (after shift) ---
+            if not stall and self.cpu.get_PC() < len(self._program)*4:
+                pipeline[0] = self._program[self.cpu.get_PC() // 4]
+                self.cpu.set_PC(self.cpu.get_PC() + 4)
+
+
+            # Debugging output (optional)
+            # print(f"Cycle {cycles} stall {stall}:")
+            # for i, stage in enumerate(['IF', 'ID', 'EX', 'MEM', 'WB']):
+            #     instr = pipeline[i]
+            #     print(f"  {stage}: {instr}")
+
+
+        print(f"Program execution completed in: {cycles} cycles.")
+
+            
+
+
     def print_state(self):
         """
         Print the current state of the program loader.

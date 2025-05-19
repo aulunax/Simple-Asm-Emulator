@@ -28,9 +28,14 @@ class STW(MemoryInstructions):
         """
 
         if(cpu.is_valid_mem_addr(self.effective_address) == False):
+            print(f"Invalid memory address: {self.effective_address}")
+            print(f"Register {self.r1} value: {cpu.read_register(self.r1)}")
+            print(f"Register {self.r2} value: {cpu.read_register(self.r2)}")
+            print(f"Offset value: {self.offset}")
+            print(cpu.registers_to_string())
             raise Exception("Invalid memory address")
         else:
-            cpu.write_memory(self.effective_address, self.r1_val)
+            cpu.write_dword(self.effective_address, self.r1_val)
 
     def wb(self, cpu):
         """

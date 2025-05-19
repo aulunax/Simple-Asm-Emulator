@@ -52,7 +52,11 @@ class CPU:
         Returns:
             hex: The value of the register as a hex value.
         """
-        return self._registers.get(reg_name, None)   
+        value = self._registers.get(reg_name, None)
+        if value is None:
+            return None
+        # Convert to signed 32-bit
+        return value if value < 0x80000000 else value - 0x100000000 
     
 
     def write_register(self, reg_name:str, value:int) -> None:
@@ -75,12 +79,13 @@ class CPU:
 
     def print_memory(self) -> None:
         """
-        Print the current state of the memory as hex values.
-
+        Print the current state of the memory in rows of 8 dwords, prefixed by address.
         """
         for i in range(0, len(self._memory), 32):
-            line = " ".join(f"0x{self.read_dword(j):08X}" for j in range(i, min(i + 32, len(self._memory)), 4))
-            print(line)
+            addr = f"{i:03X}:"
+            dwords = [f"{self.read_dword(j):08X}" for j in range(i, i + 32, 4)]
+            line = "  ".join(dwords)
+            print(f"{addr}  {line}")
 
     def registers_to_string(self) -> str:
         """
@@ -131,3 +136,50 @@ class CPU:
             bool: True if the address is valid, False otherwise.
         """
         return 0 <= addr < len(self._memory)
+    
+    def set_register_status(self, reg_name:str, status:str | None) -> None:
+        """
+        Set the status of a register.
+        Args:
+            reg_name (str): Name of the register to set the status for.
+            status (str): Status to set for the register.
+        """
+        if reg_name in self._registers:
+            self._register_status[reg_name] = status
+        else:
+            raise ValueError(f"Register {reg_name} does not exist.")
+        
+    def get_register_status(self, reg_name:str) -> str | None:
+        """
+        Get the status of a register.
+        Args:
+            reg_name (str): Name of the register to get the status for.
+        Returns:
+            str: The status of the register.
+        """
+        return self._register_status.get(reg_name, None)
+    
+    def load_memory_from_dump(self, hex_dump_path: str) -> None:
+        """
+        Load memory from a multiline hex dump string. Each line contains 8 double words (32-bit).
+        """
+        with open(hex_dump_path, 'r') as file:
+            hex_dump = file.read()
+        lines = hex_dump.strip().split('\n')
+        addr = 0
+        for line in lines:
+            parts = line.strip().split(':')
+            if len(parts) != 2:
+                continue
+            values = parts[1].strip().split()
+            for val in values:
+                dword = int(val, 16)
+                self.write_dword(addr, dword)
+                addr += 4
+
+    def print_memory_as_hex(self) -> None:
+        """
+        Print the memory as hex values.
+        """
+        for i in range(0, len(self._memory), 4):
+            print(f"0x{i:08X}: 0x{self.read_dword(i):08X}")

@@ -11,7 +11,7 @@ class LDW(MemoryInstructions):
         """
         Fetch the value of the first register from the CPU.
         """
-        self.r2_val = cpu.read_register(self.r1)
+        self.r2_val = cpu.read_register(self.r2)
       
     def ex(self, cpu):
         """
@@ -26,9 +26,10 @@ class LDW(MemoryInstructions):
         Load the word from memory into the destination register.
         """
         if cpu.is_valid_mem_addr(self.effective_address) == False:
+            print(f"Invalid memory address: {self.effective_address}")
             raise Exception("Invalid memory address")
         else:
-            self.result = cpu.read_memory(self.effective_address)
+            self.result = cpu.read_dword(self.effective_address)
 
     def wb(self, cpu):
         """

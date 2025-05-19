@@ -40,6 +40,7 @@ class Instruction:
         """
         if self.rd != 'R0':
             cpu.write_register(self.rd, self.result)
+        cpu.set_register_status(self.rd, None)  # Clear the status after writing back
         # R0 is always 0, so we don't write to it   
     
 
@@ -64,12 +65,23 @@ class RTypeInstruction(Instruction):
         self.r2_val: int | None = None
         self.result : int | None = None
 
-    def id(self, cpu: CPU):
+    def id(self, cpu: CPU) -> bool:
         """
-        Fetch the values of the registers from the CPU.
+        Fetch the values of the registers from the CPU. Returns True if stall flag is set.
         """
+        stall:bool = False
+
         self.r1_val = cpu.read_register(self.r1)
         self.r2_val = cpu.read_register(self.r2)
+
+
+        if cpu.get_register_status(self.r1) == "pending" or cpu.get_register_status(self.r2) == "pending":
+            stall = True
+
+        cpu.set_register_status(self.rd, "pending")
+        
+        return stall
+
 
     
     def mem(self, cpu: CPU):
@@ -129,11 +141,21 @@ class ITypeInstruction(Instruction):
             raise ValueError(f"Invalid I-type syntax: '{string}' (expected 'R1, immediate (in format 0xFFFFFFFF), R2')")
         return match.groups()
     
-    def id(self, cpu: CPU):
+    def id(self, cpu: CPU) -> bool:
         """
-        Fetch the value of the first register from the CPU.
+        Fetch the value of the first register from the CPU. Returns True if stall flag is set.
         """
+        stall:bool = False
         self.r1_val = cpu.read_register(self.r1)
+
+
+        if cpu.get_register_status(self.r1) == "pending":
+            stall = True
+
+        cpu.set_register_status(self.rd, "pending")
+        
+        return stall
+
         # The immediate value is already set in the constructor
 
     def mem(self, cpu: CPU):
@@ -222,12 +244,18 @@ class BranchInstructions(Instruction):
 
         self.r1_val: int | None = None
 
-    def id(self, cpu: CPU):
+    def id(self, cpu: CPU) -> bool:
         """
-        Fetch the value of the first register from the CPU.
+        Fetch the value of the first register from the CPU. Returns True if stall flag is set.
         """
+        stall:bool = False
+
         self.r1_val = cpu.read_register(self.r1)
-        # The immediate value is already set in the constructor
+
+        if cpu.get_register_status(self.r1) == "pending":
+            stall = True
+
+        return stall
 
     def mem(self, cpu: CPU):
         pass
