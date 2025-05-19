@@ -87,6 +87,15 @@ class CPU:
             line = "  ".join(dwords)
             print(f"{addr}  {line}")
 
+    def print_memory_simple(self) -> None:
+        """
+        Print the current state of the memory in a simple format.
+        """
+        for i in range(0, len(self._memory), 32):
+            dwords = [f"{self.read_dword(j):08X}" for j in range(i, i + 32, 4)]
+            line = "  ".join(dwords)
+            print(f"{line}")
+
     def registers_to_string(self) -> str:
         """
         Print the current state of the registers as hex values.
@@ -177,9 +186,10 @@ class CPU:
                 self.write_dword(addr, dword)
                 addr += 4
 
-    def print_memory_as_hex(self) -> None:
+    def get_memory(self) -> bytearray:
         """
-        Print the memory as hex values.
+        Get the current state of the memory.
+        Returns:
+            bytearray: The current state of the memory.
         """
-        for i in range(0, len(self._memory), 4):
-            print(f"0x{i:08X}: 0x{self.read_dword(i):08X}")
+        return self._memory

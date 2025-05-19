@@ -1,17 +1,15 @@
 from cpu import CPU
 from instruction_interfaces import Instruction
-from debugger_gui import DebuggerGUI
 from instruction_set import INSTRUCTION_SET
 
 
 
 class ProgramLoader:
-    def __init__(self, cpu: CPU, gui: DebuggerGUI):
+    def __init__(self, cpu: CPU):
         self.cpu = cpu
         self._labels: list[str, int] = {}
         self._parsed_input: list[str, tuple] = [] # Stores opcode and tuple of components for future validation
         self._program: list[Instruction] = []
-        self.gui = gui
         self._line_number = 0
 
 
@@ -25,6 +23,18 @@ class ProgramLoader:
             for line_content in file:
                 self.parse_lines(line_content.strip())
                 self._line_number += 1
+        self.validate_and_save_program()
+
+    def load_program_from_string(self, program_string: str):
+        """
+        Load a program from a string into memory.
+        Args:
+            program_string (str): The program string.
+        """
+        lines = program_string.strip().split('\n')
+        for line_content in lines:
+            self.parse_lines(line_content.strip())
+            self._line_number += 1
         self.validate_and_save_program()
 
    
@@ -91,10 +101,11 @@ class ProgramLoader:
             self._program.append(instruction)
 
 
-    def run_program(self):
+    def run_program(self) -> int:
         pipeline: list[Instruction | None] = [None] * 5  # IF, ID, EX, MEM, WB
         cycles = 0
         stall:bool = False
+        stall_counter = 0
 
         while any(pipeline) or self.cpu.get_PC() < len(self._program)*4:
             cycles += 1
@@ -116,6 +127,8 @@ class ProgramLoader:
             # --- Instruction Decode Stage ---
             if pipeline[1]:
                 stall = pipeline[1].id(self.cpu)
+                if stall:
+                    stall_counter += 1
 
 
               # --- Shift Pipeline ---
@@ -140,7 +153,7 @@ class ProgramLoader:
             #     print(f"  {stage}: {instr}")
 
 
-        print(f"Program execution completed in: {cycles} cycles.")
+        return cycles
 
             
 
@@ -161,3 +174,28 @@ class ProgramLoader:
         """
         for instruction in self._program:
             print(instruction)
+
+    def compare_results(self, path:str = "correct_result.txt") -> bool:
+        """
+        Compare the results of the program with the expected results.
+        Args:
+            path (str): Path to the file containing the expected results.
+        """
+        with open(path, 'r') as file:
+            expected_results = file.readlines()
+        
+        # Compare memory contents to expected results
+
+        for line in expected_results:
+            addr_part, data_part = line.strip().split(':')
+            base_addr = int(addr_part.strip(), 16)
+            values = data_part.strip().split()
+
+        for i, val in enumerate(values):
+            expected_value = int(val, 16)
+            actual_value = self.cpu.read_dword(base_addr + i * 4)
+            if actual_value != expected_value:
+                print(f"Mismatch at address {base_addr + i*4:#010x}: expected {expected_value:#010x}, got {actual_value:#010x}")
+                return False
+        return True
+       
