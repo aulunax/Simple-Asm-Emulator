@@ -22,8 +22,8 @@
 
 - [x] Validation of the memory and branch classes
 
-- [ ] Change ID phase to change registers to pending, and return stall flag = True if ID tries to fetch register that is already in use
+- [x] Change ID phase to change registers to pending, and return stall flag = True if ID tries to fetch register that is already in use
 
-- [ ] Pipeline architecture execution of the code, Wb -> IF
+- [x] Pipeline architecture execution of the code, Wb -> IF
 
-- [ ] Simple stalling, no forwarding
+- [x] Simple stalling, no forwarding
