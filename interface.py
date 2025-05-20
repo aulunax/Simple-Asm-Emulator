@@ -10,6 +10,7 @@ if __name__ == "__main__":
     parser.add_argument('--ref', default="correct_result.txt", help="Path to expected results file")
     parser.add_argument('--simple', default=False, help="Simplify output of the program")
     parser.add_argument('--instr', help="Raw instruction string to load instead of file")
+    parser.add_argument('--timeout', type=int, help="Stop execution after this many cycles")
     args = parser.parse_args()
 
     cpu = CPU()
@@ -33,9 +34,13 @@ if __name__ == "__main__":
         raise ValueError("No program file or instruction string provided.")
 
     try:
-        cycles = program_loader.run_program()
+        cycles, is_force_stopped = program_loader.run_program(timeout=args.timeout)
     except Exception as e:
         print("Error")
+        exit(0)
+
+    if is_force_stopped:
+        print("Force_stopped")
         exit(0)
 
     print("Completed")
