@@ -101,13 +101,19 @@ class ProgramLoader:
             self._program.append(instruction)
 
 
-    def run_program(self) -> int:
+    def run_program(self, timeout:int|None=None) -> tuple[int, bool]:
         pipeline: list[Instruction | None] = [None] * 5  # IF, ID, EX, MEM, WB
         cycles = 0
         stall:bool = False
         stall_counter = 0
+        is_force_stopped:bool = False # Is stopped by timeout in cycles
 
         while any(pipeline) or self.cpu.get_PC() < len(self._program)*4:
+
+            if timeout is not None and timeout == cycles:
+                is_force_stopped = True
+                return cycles, is_force_stopped
+            
             cycles += 1
             
             
@@ -146,6 +152,7 @@ class ProgramLoader:
                 self.cpu.set_PC(self.cpu.get_PC() + 4)
 
 
+
             # Debugging output (optional)
             # print(f"Cycle {cycles} stall {stall}:")
             # for i, stage in enumerate(['IF', 'ID', 'EX', 'MEM', 'WB']):
@@ -153,7 +160,7 @@ class ProgramLoader:
             #     print(f"  {stage}: {instr}")
 
 
-        return cycles
+        return cycles, is_force_stopped
 
             
 
